@@ -1,0 +1,37 @@
+[
+    {
+        "name": "Вася",
+        "age": 20,
+        "skills": [
+            "JS",
+            "Python",
+            "C++",
+            "C#",
+            "Java"
+        ],
+        "work": null,
+        "is_student": true
+    },
+    {
+        "name": "Маша",
+        "age": 18,
+        "skills": [
+            "JS",
+            "Python",
+            "C++",
+            "C#",
+            "Java"
+        ]
+    },
+    {
+        "name": "Петя",
+        "age": 25,
+        "skills": [
+            "JS",
+            "Python",
+            "C++",
+            "C#",
+            "Java"
+        ]
+    }
+]
