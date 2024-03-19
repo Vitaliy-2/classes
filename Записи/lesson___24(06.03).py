@@ -33,6 +33,7 @@ class MediumMatryoshka(BigMatryoshka):
     """
     Средняя матрешка
     """
+
     def __init__(self, color):
         self.big_matryoshka = BigMatryoshka(color)
         super().__init__(color)
@@ -47,6 +48,30 @@ class MediumMatryoshka(BigMatryoshka):
         print(f'{self.size} матрешка, цвет: {self.color} с ID {self.id} открывается')
 
 
-medium_matryoshka = MediumMatryoshka('Красный')
-medium_matryoshka.open()
-print(medium_matryoshka.get_big_count())
+class SmallMatryoshka(MediumMatryoshka):
+    """
+    Маленькая матрешка.
+    """
+
+    def __init__(self, color):
+        self.medium_matryoshka = MediumMatryoshka(color)
+        self.big_matryoshka = self.medium_matryoshka.big_matryoshka
+        self.size = 'Маленькая'
+        self.color = color
+        BigMatryoshka.count += 1
+
+    def open(self):
+        """
+        Открываем матрешку
+        """
+        self.big_matryoshka.open()
+        self.medium_matryoshka.open()
+        print(f'{self.size} матрешка, цвет: {self.color} с ID {self.id} открывается')
+
+
+small_matryoshka = SmallMatryoshka('Зеленая')
+print(small_matryoshka.get_big_count())
+medium_matryoshka = MediumMatryoshka('Красная')
+print(small_matryoshka.get_big_count())
+big_matryoshka = BigMatryoshka('Синяя')
+print(small_matryoshka.get_big_count())
