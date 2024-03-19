@@ -8,7 +8,7 @@ class BigMatryoshka:
         self.size = 'Большая'
         self.color = color
         __class__.count += 1
-        self.id = BigMatryoshka.count
+        self.id = __class__.count
 
     def open(self):
         """
@@ -33,11 +33,14 @@ class MediumMatryoshka(BigMatryoshka):
     """
     Средняя матрешка
     """
+    count = 0
 
     def __init__(self, color):
         self.big_matryoshka = BigMatryoshka(color)
         super().__init__(color)
         self.size = 'Средняя'
+        __class__.count += 1
+        self.id = __class__.count
 
     def open(self):
         """
@@ -52,13 +55,15 @@ class SmallMatryoshka(MediumMatryoshka):
     """
     Маленькая матрешка.
     """
+    count = 0
 
     def __init__(self, color):
         self.medium_matryoshka = MediumMatryoshka(color)
         self.big_matryoshka = self.medium_matryoshka.big_matryoshka
         self.size = 'Маленькая'
         self.color = color
-        BigMatryoshka.count += 1
+        __class__.count += 1
+        # self.id = __class__.count
 
     def open(self):
         """
@@ -72,6 +77,6 @@ class SmallMatryoshka(MediumMatryoshka):
 small_matryoshka = SmallMatryoshka('Зеленая')
 print(small_matryoshka.get_big_count())
 medium_matryoshka = MediumMatryoshka('Красная')
-print(small_matryoshka.get_big_count())
+print(medium_matryoshka.get_big_count())
 big_matryoshka = BigMatryoshka('Синяя')
-print(small_matryoshka.get_big_count())
+print(big_matryoshka.get_big_count())
