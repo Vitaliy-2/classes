@@ -1,12 +1,13 @@
-class BigMatryoshka:
+class AbstractMatryoshka:
     """
-    Большая матрешка
+    Абстрактный класс Матрешка.
+    Тут может быть реализовано общее поведение для всех матрешек
     """
     count = 0
 
-    def __init__(self, color):
-        self.size = 'Большая'
-        self.color = color
+    def __init__(self):
+        self.size = None
+        self.color = None
         __class__.count += 1
         self.id = __class__.count
 
@@ -18,7 +19,7 @@ class BigMatryoshka:
         print(f'{self.size} матрешка, цвет: {self.color} с ID {self.id} открывается')
 
     @classmethod
-    def get_big_count(cls):
+    def get_count(cls):
         return cls.count
 
     def __str__(self):
@@ -29,54 +30,53 @@ class BigMatryoshka:
         return f'Размер: {self.size}. Цвет: {self.color}, id: {self.id}'
 
 
-class MediumMatryoshka(BigMatryoshka):
+class BigMatryoshka(AbstractMatryoshka):
     """
-    Средняя матрешка
+    Большая матрешка
     """
-    count = 0
 
     def __init__(self, color):
-        self.big_matryoshka = BigMatryoshka(color)
-        super().__init__(color)
-        self.size = 'Средняя'
-        __class__.count += 1
-        self.id = __class__.count
+        super().__init__()
+        self.size = 'Большая'
+        self.color = color
 
     def open(self):
-        """
-        Открывает матрешку
-        :return:
-        """
-        self.big_matryoshka.open()
         print(f'{self.size} матрешка, цвет: {self.color} с ID {self.id} открывается')
 
 
-class SmallMatryoshka(MediumMatryoshka):
+class MediumMatryoshka(AbstractMatryoshka):
     """
-    Маленькая матрешка.
+    Большая матрешка
     """
-    count = 0
 
     def __init__(self, color):
-        self.medium_matryoshka = MediumMatryoshka(color)
-        self.big_matryoshka = self.medium_matryoshka.big_matryoshka
+        super().__init__()
+        self.size = 'Средняя'
+        self.color = color
+
+    def open(self):
+        super().open()
+
+
+class SmallMatryoshka(AbstractMatryoshka):
+    """
+    Большая матрешка
+    """
+
+    def __init__(self, color):
+        super().__init__()
         self.size = 'Маленькая'
         self.color = color
-        __class__.count += 1
-        # self.id = __class__.count
 
     def open(self):
-        """
-        Открываем матрешку
-        """
-        self.big_matryoshka.open()
-        self.medium_matryoshka.open()
-        print(f'{self.size} матрешка, цвет: {self.color} с ID {self.id} открывается')
+        super().open()
 
 
-small_matryoshka = SmallMatryoshka('Зеленая')
-print(small_matryoshka.get_big_count())
-medium_matryoshka = MediumMatryoshka('Красная')
-print(medium_matryoshka.get_big_count())
-big_matryoshka = BigMatryoshka('Синяя')
-print(big_matryoshka.get_big_count())
+big = BigMatryoshka('Красный')
+big.open()
+medium = MediumMatryoshka('Синий')
+medium.open()
+small = SmallMatryoshka('Желтый')
+small.open()
+
+# big.display_info()
