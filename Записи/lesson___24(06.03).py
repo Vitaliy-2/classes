@@ -1,4 +1,19 @@
-class AbstractMatryoshka:
+"""
+Чтобы сделать это действительно абстрактным,
+на нужно использовать ABC - Abstract Base Class и декоратор @abstractmethod.
+
+ABC - это класс, который не может быть инсталлирован (из него нельзя создать экземпляр).
+
+@abstractmethod - это декоратор, который указывает, что метод должен быть реализован
+в дочерних классах
+
+ABC - нужно, чтобы другие разработчики явно понимали, что точно должно наследоваться
+у наследников.
+"""
+from abc import ABC, abstractmethod
+
+
+class AbstractMatryoshka(ABC):
     """
     Абстрактный класс Матрешка.
     Тут может быть реализовано общее поведение для всех матрешек
@@ -11,6 +26,7 @@ class AbstractMatryoshka:
         __class__.count += 1
         self.id = __class__.count
 
+    @abstractmethod  # Означает, кто в каждом наследнике должен быть описан метод open
     def open(self):
         """
         Открывает матрешку
@@ -74,9 +90,12 @@ class SmallMatryoshka(AbstractMatryoshka):
 
 big = BigMatryoshka('Красный')
 big.open()
+print(big)
 medium = MediumMatryoshka('Синий')
 medium.open()
+print(medium)
 small = SmallMatryoshka('Желтый')
 small.open()
+print(small)
 
 # big.display_info()
