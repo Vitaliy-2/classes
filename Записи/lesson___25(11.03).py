@@ -17,9 +17,21 @@
 
 __call__ - вызов объекта как функции
 
+
+Как это работает с наследованием?
+
+@total_ordering - декоратор, который позволяет определить все методы сравнения
+Нам надо определить метод проверки на равенство
+И один из методов сравнения: меньше, меньше или равно, больше, больше или равно
+Не нужно описывать методы, а только два.
+
+__call__ - вызов объекта как функции
+
 """
+from functools import total_ordering
 
 
+@total_ordering
 class Kettlebell:
     """
     Гиря
@@ -50,16 +62,6 @@ class Kettlebell:
             return NotImplemented
         return self.weight == other.weight and self.length == other.length and self.width == other.width
 
-    def __ne__(self, other: 'Kettlebell') -> bool:
-        """
-        Неравенство
-        :param other:
-        :return:
-        """
-        if not isinstance(other, Kettlebell):
-            return NotImplemented
-        return self.weight != other.weight
-
     def __lt__(self, other: 'Kettlebell') -> bool:
         """
         Меньше
@@ -69,16 +71,6 @@ class Kettlebell:
         if not isinstance(other, Kettlebell):
             return NotImplemented
         return self.weight < other.weight
-
-    def __le__(self, other: 'Kettlebell') -> bool:
-        """
-        Меньше или равно
-        :param other:
-        :return:
-        """
-        if not isinstance(other, Kettlebell):
-            return NotImplemented
-        return self.weight <= other.weight
 
 
 class Dumbbells:
