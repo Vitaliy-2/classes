@@ -9,6 +9,10 @@ ABC - это класс, который не может быть инсталл�
 
 ABC - нужно, чтобы другие разработчики явно понимали, что точно должно наследоваться
 у наследников.
+
+- __base__ - ссылка на родительский класс
+- isubclass() - проверка наследования
+- isinstance() - проверка принадлежности к классу
 """
 from abc import ABC, abstractmethod
 
@@ -98,4 +102,32 @@ small = SmallMatryoshka('Желтый')
 small.open()
 print(small)
 
+
 # big.display_info()
+
+
+class GlassMatryoshkaMixin:
+    """
+    Миксин для стеклянной матрешки
+    """
+
+    def __init__(self):
+        self.material = 'Стекло'
+
+
+class BigGlassMatryoshka(BigMatryoshka, GlassMatryoshkaMixin):
+    """
+    Большая стеклянная матрешка
+    """
+
+    def __init__(self, color):
+        super().__init__(color)
+
+    def open(self):
+        print('Большая стеклянная матрешка открывается')
+
+
+glass_matryoshka = BigGlassMatryoshka('Красный')
+glass_matryoshka.open()
+
+print(BigGlassMatryoshka.mro())
