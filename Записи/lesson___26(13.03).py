@@ -20,20 +20,28 @@ __itruediv__ - деление
 
 Практика - игровые персонажи, здоровье и мана
 """
+from typing import Union
 
 
 #  Класс банковский счет с методом __add__ и __iadd__
 class BankAccount:
-    def __init__(self, balance: float):
+    def __init__(self, balance: float, owner: str):
         self.balance = balance
+        self.owner = owner
 
     def __str__(self) -> str:
-        return f'Банковский счет: {self.balance}'
+        return f'Банковский счет: {self.balance}, владелец: {self.owner}'
 
-    def __add__(self, other: float | int) -> 'BankAccount':
+    def __add__(self, other: Union[float, int, 'BankAccount']) -> 'BankAccount':
         if isinstance(other, (int, float)):
             self.balance += other
             return self
+        elif isinstance(other, BankAccount):
+            new_balance = self.balance + other.balance
+            new_owners = self.owner + " и " + other.owner
+            self.balance = 0
+            other.balance = 0
+            return BankAccount(new_balance, new_owners)
 
     def __iadd__(self, other: float | int) -> float | int:
         raise NotImplementedError
@@ -56,7 +64,7 @@ class BankAccount:
 
 
 # Создаем объекты
-my_account = BankAccount(1000)
+my_account = BankAccount(1000, 'Петров')
 print(my_account)
 
 # Сложение
@@ -65,3 +73,12 @@ my_account + 500
 my_account + 500
 my_account -= 200
 print(my_account)
+
+# Сложение аккаунтов
+b1 = BankAccount(1000, 'Иванов')
+b2 = BankAccount(2000, 'Смирнова')
+
+b4 = BankAccount(1000, 'Петов')
+
+b3 = b2 + b4 + b1
+print(b3)
