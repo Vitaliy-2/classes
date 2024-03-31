@@ -60,7 +60,7 @@ class Kettlebell:
         # Проверка на принадлежность к классу
         if not isinstance(other, Kettlebell):
             return NotImplemented
-        return self.weight == other.weight and self.length == other.length and self.width == other.width
+        return self.weight == other.weight
 
     def __lt__(self, other: 'Kettlebell') -> bool:
         """
@@ -79,26 +79,74 @@ class Dumbbells:
     pass
 
 
-ket1 = Kettlebell(16, 45, 11)
-print(ket1)
-if ket1:
-    print('Гиря настоящая')
+# ket1 = Kettlebell(16, 45, 11)
+# print(ket1)
+# if ket1:
+#     print('Гиря настоящая')
+#
+# print(len(ket1))
+#
+# ket2 = Kettlebell(16)
+# ket3 = Kettlebell(24)
+#
+# print(ket1 == ket2)
+# print(ket1 != ket2)
+#
+# print(ket1 < ket2)
+# print(ket1 <= ket2)
+#
+# print(ket1 > ket2)
+# print(ket1 >= ket2)
+#
+#
+# dumb1 = Dumbbells()
+#
+# # print(ket1 == dumb1)
+#
+# ket4 = Kettlebell(36)
+# ket5 = Kettlebell(42)
+#
+# ket_list = [ket5, ket1, ket3, ket2, ket4]
+# ket_list.sort(reverse=True)
+# [print(k) for k in ket_list]
 
-print(len(ket1))
+# Практика
 
-ket2 = Kettlebell(16)
-ket3 = Kettlebell(24)
+@total_ordering
+class City:
+    def __init__(self, name, population):
+        self.name = name
+        self.population = population
 
-print(ket1 == ket2)
-print(ket1 != ket2)
+    def __str__(self):
+        return f'Город: {self.name}, Население: {self.population}'
 
-print(ket1 < ket2)
-print(ket1 <= ket2)
+    def __eq__(self, other: 'City') -> bool:  # other - другой экземпляр этого класса
+        if not isinstance(other, City):
+            return NotImplemented
+        return self.population == other.population
 
-print(ket1 > ket2)
-print(ket1 >= ket2)
+    def __lt__(self, other: 'City') -> bool:
+        if not isinstance(other, City):
+            return NotImplemented
+        return self.population < other.population
 
 
-dumb1 = Dumbbells()
+city1 = City('Москва', 15000000)
+city2 = City('Санкт-Петербург', 11000000)
+city3 = City('Екатеринбург', 8000000)
+city4 = City('Самара', 4000000)
+city5 = City('Петрозаводск', 350000)
 
-# print(ket1 == dumb1)
+print(f'Сравнение на "равенство" Москвы и Питера: {city1 == city2}')
+print(f'Сравнение на "неравенство" Самары и Петрозаводска: {city4 != city5}')
+
+print(f'Сравнение на "больше" Москвы и Питера: {city1 > city2}')
+print(f'Сравнение на "меньше" Екатеринбурга и Петрозаводска: {city3 < city5}')
+
+print(f'Сравнение на "больше и равно" Москвы и Екатеринбурга: {city1 >= city3}')
+print(f'Сравнение на "меньше и равно" Питера и Самары: {city2 <= city4}')
+
+city_list = [city2, city5, city1, city4, city3]
+city_list.sort()
+[print(city) for city in city_list]
