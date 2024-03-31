@@ -22,36 +22,46 @@ __itruediv__ - деление
 """
 
 
-class Pins:
-    def __init__(self, weight):
-        self.weight = weight
+#  Класс банковский счет с методом __add__ и __iadd__
+class BankAccount:
+    def __init__(self, balance: float):
+        self.balance = balance
 
-    def __str__(self):
-        return f'Вес блина составляет: {self.weight} кг.'
+    def __str__(self) -> str:
+        return f'Банковский счет: {self.balance}'
 
-    def __add__(self, other):
-        if isinstance(other, Pins):
-            return Pins(self.weight + other.weight)
+    def __add__(self, other: float | int) -> 'BankAccount':
+        if isinstance(other, (int, float)):
+            self.balance += other
+            return self
+
+    def __iadd__(self, other: float | int) -> float | int:
+        raise NotImplementedError
+
+    def __sub__(self, other: float | int) -> 'BankAccount':
+        if isinstance(other, (int, float)):
+            # Условие чтобы не уйти в минус
+            if self.balance - other < 0:
+                raise ValueError('Недостаточно средств')
+            self.balance -= other
+            return self
+
+    def __mul__(self, other: float | int) -> float | int:
+        if isinstance(other, (int, float)):
+            raise NotImplementedError
+
+    def __truediv__(self, other: float | int) -> float | int:
+        if isinstance(other, (int, float)):
+            raise NotImplementedError
 
 
-p1 = Pins(20)
-p2 = Pins(30)
-p3 = p1 + p2
-print(p1 + p2)
-print(p3)
-count = 0
+# Создаем объекты
+my_account = BankAccount(1000)
+print(my_account)
 
-pins_list = [p1, p2, p3]
-sum_pins = sum(pins_list, Pins(0))
-print(sum_pins)
-
-"""
-В Python функция sum используется для подсчета суммы элементов 
-итерируемого объекта, начиная с некоторого начального значения. 
-
-По умолчанию, это начальное значение равно 0 для чисел. 
-Однако, когда вы работаете с объектами пользовательского класса, 
-вам нужно обеспечить начальное значение, которое является экземпляром вашего класса. 
-Это необходимо, потому что Python не знает, как складывать ваши пользовательские 
-объекты без явного указания.
-"""
+# Сложение
+my_account + 500
+my_account + 500
+my_account + 500
+my_account -= 200
+print(my_account)
