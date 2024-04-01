@@ -20,65 +20,53 @@ __itruediv__ - деление
 
 Практика - игровые персонажи, здоровье и мана
 """
-from typing import Union
+
+class Mana:
+    def __init__(self, value):
+        self.value = value
+
+    def __sub__(self, other):
+        if isinstance(other, int):
+            self.value -= other
+        else:
+            raise ValueError('Можно вычитать только целые числа')
+        return self.value
 
 
-#  Класс банковский счет с методом __add__ и __iadd__
-class BankAccount:
-    def __init__(self, balance: float, owner: str):
-        self.balance = balance
-        self.owner = owner
-
-    def __str__(self) -> str:
-        return f'Банковский счет: {self.balance}, владелец: {self.owner}'
-
-    def __add__(self, other: Union[float, int, 'BankAccount']) -> 'BankAccount':
-        if isinstance(other, (int, float)):
-            self.balance += other
-            return self
-        elif isinstance(other, BankAccount):
-            new_balance = self.balance + other.balance
-            new_owners = self.owner + " и " + other.owner
-            self.balance = 0
-            other.balance = 0
-            return BankAccount(new_balance, new_owners)
-
-    def __iadd__(self, other: float | int) -> float | int:
-        raise NotImplementedError
-
-    def __sub__(self, other: float | int) -> 'BankAccount':
-        if isinstance(other, (int, float)):
-            # Условие чтобы не уйти в минус
-            if self.balance - other < 0:
-                raise ValueError('Недостаточно средств')
-            self.balance -= other
-            return self
-
-    def __mul__(self, other: float | int) -> float | int:
-        if isinstance(other, (int, float)):
-            raise NotImplementedError
-
-    def __truediv__(self, other: float | int) -> float | int:
-        if isinstance(other, (int, float)):
-            raise NotImplementedError
+class Mage:
+    def __init__(self):
+        self.mana = Mana(100)
 
 
-# Создаем объекты
-my_account = BankAccount(1000, 'Петров')
-print(my_account)
+# mage = Mage()
+# mage.mana - 30
+# print(mage.mana.value)
 
-# Сложение
-my_account + 500
-my_account + 500
-my_account + 500
-my_account -= 200
-print(my_account)
 
-# Сложение аккаунтов
-b1 = BankAccount(1000, 'Иванов')
-b2 = BankAccount(2000, 'Смирнова')
+class Health:
+    def __init__(self, value):
+        self.value = value
+        print(f'Начальное здоровье: {self.value}')
 
-b4 = BankAccount(1000, 'Петов')
+    def __add__(self, other):
+        self.value += other
+        print(f'Здоровье повысилось до: {self.value}')
+        return self.value
 
-b3 = b2 + b4 + b1
-print(b3)
+    def __sub__(self, other):
+        self.value -= other
+        print(f'Здоровье уменьшилось до: {self.value}')
+        return self.value
+
+
+class Berserk:
+    def __init__(self, health: int = 120):
+        self.health = Health(health)
+
+
+berserk = Berserk()
+# print(f'Начальное состояние здоровья: {berserk.health.value}')
+berserk.health + 70
+# print(f'Состояние здоровья после хилки на 70 хп: {berserk.health.value}')
+berserk.health - 50
+# print(f'Состояние здоровья после получения урона: {berserk.health.value}')
