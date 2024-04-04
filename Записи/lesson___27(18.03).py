@@ -21,12 +21,15 @@ from dataclasses import dataclass, field
 
 @dataclass
 class Person:
+    """
+    Уберем name и city из сравнения
+    """
     name: str
-    age: int
-    city: str
+    age: int = field(compare=False)  # Данная переменная не будет участвовать в сравнении __eq__
+    city: str = field(compare=False)
 
 
-p1 = Person('Вася', 20, 'Москва')
+p1 = Person('Вася', 20, 'Архангельск')
 p2 = Person('Маша', 18, 'Санкт-Петербург')
 p3 = Person('Вася', 20, 'Москва')
 p4 = Person('Вася', 21, 'Москва')
@@ -34,4 +37,4 @@ p4 = Person('Вася', 21, 'Москва')
 p1_str = str(p1)
 p1_new = eval(p1_str)
 
-print(p1 == p3)
+print(p1 == p4)
