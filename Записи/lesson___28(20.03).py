@@ -30,11 +30,29 @@ import selenium
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
+# Настройки
+# options
+options = webdriver.FirefoxOptions()
+
+
+SETTINGS = [
+    "--start-maximized",  # Открыть браузер на весь экран
+    # "--new-headless" # Открыть браузер в фоне
+    "--incognito",  # Включить режим инкогнито
+    # "--window-size=1920,1080", # Размеры окна
+]
+
+# По штучно добавляем опции
+# for params in SETTINGS:
+#     options.add_argument(params)
+options.add_argument("--start-maximized")
+
 # # Создаем экземпляр драйвера
-driver = webdriver.Firefox()
+driver = webdriver.Firefox(options=options)
 
 # Переходим на сайт
-driver.get("https://www.google.com/")
+driver.get("https://www.google.com")
+# driver.fullscreen_window()
 # скриншот страницы
 # driver.save_screenshot("google.png")
 time.sleep(2)
