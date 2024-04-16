@@ -11,26 +11,31 @@ Lesosn 29
 
 from dataclasses import dataclass, field, fields, asdict
 
-# Класс - декоратор, который добавит к датаклассу методы
 
-class CityDecorator:
-    def __init__(self, cls):
-        self.cls = cls
+class MetaClass(type):  # Указываем тип метакласса (type)
+    def __new__(cls, name, bases, dct):  # получаем атрибуты класса
+        # cls - сам объект метакласса
+        # name - имя класса
+        # bases - родительские классы
+        # dct - атрибуты класса
+        print('Создаем класс с именем', name)
+        print(type(name))
+        # Добавляем атрибут к классу
+        dct['new_attribute'] = 100
+        return super().__new__(cls, name, bases, dct)
 
-    def __call__(self, *args, **kwargs):
-        obj = self.cls(*args, **kwargs)
-        obj.get_info = self.get_info
-        return obj
 
-    def get_info(self):
-        return f'Информация о городе: {self.name}'
+class MyClass(metaclass=MetaClass):  # Определяем класс с использованием метакласса
+    pass
 
 
-@CityDecorator
-@dataclass
-class City:
-    name: str
-    population: int
-    latitude: float
-    longitude: float
-    region: str = field(default='Europe')
+# Создаем экземпляр класса
+my_class = MyClass()
+# выводим атрибут
+print(my_class.new_attribute)
+
+
+class User(metaclass=MetaClass):
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
