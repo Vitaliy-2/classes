@@ -12,19 +12,21 @@ Lesosn 29
 from dataclasses import dataclass, field, fields, asdict
 
 
+@dataclass(order=True)
+class AbstractPerson:
+    first_name: str = field(metadata={"description": "Имя"})
+
+
 @dataclass(order=True)  # order дает делать сравнения
-class Person:
-    # Исключаем лишние поля
-    name: str = field(compare=False, metadata={"description": "Имя"})
+class Person(AbstractPerson):
     # метадата - добавление дополнительных условий
     age: int = field(metadata={"description": "Возраст"})
     city: str = field(compare=False, metadata={"description": "Город"})
 
     def __str__(self):
         """
-        Дадим данные из меты ключ description
-        Неоправданно завышенная сложность.
-        Просто, чтобы показать возможности метаинформации.
+        Оправданная сложность.
+        В наследниках все работает автоматически
         """
         # в fields(self) - помещается экземпляр класса, то есть вася и маша
         meta_str = ", ".join([f'{f.metadata['description']}: {getattr(self, f.name)}' for f in fields(self)])
@@ -39,6 +41,13 @@ class Employee(Person):
 
 p1 = Employee('Вася', 25, 'Москва', 'Программист', 100_000)
 p2 = Employee('Маша', 30, 'Москва', 'Программист', 100_000)
+p3 = Employee('Аня', 25, 'Москва', 'Тимлид', 150_000)
 
 print(p1)
 print(p2)
+print(p3)
+print(p1.first_name)
+
+# fields - функция которая возвращает список полей датакласса.
+# Возвращает в виде кортежа.
+# Каждое поле - объект fields
