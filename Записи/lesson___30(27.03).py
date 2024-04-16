@@ -12,35 +12,42 @@ Meta classes
 from typing import Any
 
 
-# Определим простой класс Car, который имеет один атрибут - brand (марка авто)
-class Car:
-    def __init__(self, brand) -> None:
-        self.brand = brand
+# Определим класс-декоратор, который будет добавлять серию методов к другому классу
+class AddSeriesOfMethods:
+    def __init__(self, cls):
+        self.cls = cls
 
-    # Создадим декоратор класса, который добавляет новый метод и атрибут к классу
+    def __call__(self, *args, **kwargs):
+        # Создаем экземпляр оригинального класса
+        instance = self.cls(*args, **kwargs)
+
+        # Добавляем методы к экземпляру
+        def first_method(self):
+            return "This is the first method"
+
+        def second_method(self):
+            return "This is the second method"
+
+        def third_method(self):
+            return "This is the third method"
+
+        # __get__ - метод привязывает метод к экземпляру`
+        instance.first_method = first_method.__get__(instance)
+        instance.second_method = second_method.__get__(instance)
+        instance.third_method = third_method.__get__(instance)
+
+        return instance
 
 
-# cls и self это всего лишь переменные, который могут называться как угодно
-def add_method_and_attribute(cls) -> Any:
-    cls.country = 'Japan'  # Добавляем новый атрибут класса
-
-    def get_info(self) -> str:  # Определяем новый метод
-        return f'This {self.brand} is form {self.country}'
-
-    cls.get_info = get_info  # добавляем метод к классу
-    return cls  # Возвращаем модифицированный класс
+# Определим простой класс, к которому будем применять наш класс-декоратор
+@AddSeriesOfMethods
+class SimpleClass:
+    def __init__(self, name):
+        self.name = name
 
 
-# Применяем декоратор к классу Car
-@add_method_and_attribute
-class Car:
-    def __init__(self, brand) -> None:
-        self.brand: Any = brand
-
-
-# Создаем экземпляр класса Car и проверяем добавленный метод и атрибут
-car = Car('Toyota')
-info: Any = car.get_info()
-car_country: Any = Car.country
-
-print(info, car_country)
+# Создадим экземпляр декорированного класса и проверим добавленные методы
+decorated_instance = SimpleClass("Example")
+print(decorated_instance.first_method())
+print(decorated_instance.second_method())
+print(decorated_instance.third_method())
