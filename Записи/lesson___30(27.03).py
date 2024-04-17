@@ -9,45 +9,40 @@ Meta classes
 Библиотека pickle
 Практика pickle
 """
-from typing import Any
 
 
-# Определим класс-декоратор, который будет добавлять серию методов к другому классу
-class AddSeriesOfMethods:
-    def __init__(self, cls):
-        self.cls = cls
+# Определение метакласса, который добавляет методы и атрибут к классу
+class AddMethodsMeta(type):
+    def __new__(cls, name, bases, dct):
+        # Добавление нового атрибута к классу
+        dct['new_attribute'] = 'New Attribute Value'
 
-    def __call__(self, *args, **kwargs):
-        # Создаем экземпляр оригинального класса
-        instance = self.cls(*args, **kwargs)
+        # Добавление новых методов к классу
+        def first_new_method(self):
+            return "First new method"
 
-        # Добавляем методы к экземпляру
-        def first_method(self):
-            return "This is the first method"
+        def second_new_method(self):
+            return "Second new method"
 
-        def second_method(self):
-            return "This is the second method"
+        dct['first_new_method'] = first_new_method
+        dct['second_new_method'] = second_new_method
 
-        def third_method(self):
-            return "This is the third method"
-
-        # __get__ - метод привязывает метод к экземпляру`
-        instance.first_method = first_method.__get__(instance)
-        instance.second_method = second_method.__get__(instance)
-        instance.third_method = third_method.__get__(instance)
-
-        return instance
+        # Создание нового класса с помощью super()
+        return super().__new__(cls, name, bases, dct)
 
 
-# Определим простой класс, к которому будем применять наш класс-декоратор
-@AddSeriesOfMethods
-class SimpleClass:
-    def __init__(self, name):
-        self.name = name
+# Использование метакласса для создания нового класса
+class ExtendedClass(metaclass=AddMethodsMeta):
+    def original_method(self):
+        return "Original method"
 
 
-# Создадим экземпляр декорированного класса и проверим добавленные методы
-decorated_instance = SimpleClass("Example")
-print(decorated_instance.first_method())
-print(decorated_instance.second_method())
-print(decorated_instance.third_method())
+# Создание экземпляра класса
+instance = ExtendedClass()
+
+# Проверка работы добавленных методов и атрибута
+print(instance.new_attribute)
+print(instance.original_method())
+print(instance.first_new_method())
+print(instance.second_new_method())
+
