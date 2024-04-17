@@ -11,38 +11,33 @@ Meta classes
 """
 
 
-# Определение метакласса, который добавляет методы и атрибут к классу
-class AddMethodsMeta(type):
-    def __new__(cls, name, bases, dct):
-        # Добавление нового атрибута к классу
-        dct['new_attribute'] = 'New Attribute Value'
+# 2 половины конструктора класса __init__ и __new__
+class First:
+    def __init__(self, name):
+        self.name = name
+        print('First.__init__')
 
-        # Добавление новых методов к классу
-        def first_new_method(self):
-            return "First new method"
+    # new создает пустой объект, в котором ничего нет
+    # после создания new передает пустой объект в init
+    # super - вызывает метод родителя
+    def __new__(cls, *args, **kwargs):
+        print('First.__new__')
+        return super().__new__(cls)
 
-        def second_new_method(self):
-            return "Second new method"
-
-        dct['first_new_method'] = first_new_method
-        dct['second_new_method'] = second_new_method
-
-        # Создание нового класса с помощью super()
-        return super().__new__(cls, name, bases, dct)
+    def custom_method(self):
+        print('First.custom_method')
 
 
-# Использование метакласса для создания нового класса
-class ExtendedClass(metaclass=AddMethodsMeta):
-    def original_method(self):
-        return "Original method"
+class Second(First):
+    def __init__(self, name, last_name):
+        self.last_name = last_name
+        print('Second.__init__')
+        super().__init__(name)
+
+    def custom_2_method(self):
+        print('Second.custom_2_method')
+        super().custom_method()
 
 
-# Создание экземпляра класса
-instance = ExtendedClass()
-
-# Проверка работы добавленных методов и атрибута
-print(instance.new_attribute)
-print(instance.original_method())
-print(instance.first_new_method())
-print(instance.second_new_method())
-
+s = Second('Ivan', 'Ivanov')
+s.custom_2_method()
