@@ -9,61 +9,33 @@ Meta classes
 Библиотека pickle
 Практика pickle
 """
+
+import pickle
 from dataclasses import dataclass
 
 
-# Преобразование информации, например JSON строки во что-то сложное, например
-# список словарей и тд. Сериализация - преобразование чего-либо в строку
-# Десериализация - из текста во что-то сложное
+# Бинарник для сохранения информации и дальнейшего извлечения
+# Аудио, видео, картинки
 
 
 @dataclass
 class Person:
     name: str
     age: int
-
-    def __str__(self):
-        return f'Экземпляр класса Person: {self.name}, {self.age}'
+    city: str
 
 
-# Класс итератор, который примет нахвание txt файла и будет возвращать по
-# одной строке из файла.
-# Преобразовывая это в экземпляр класса Person
+# data: dict[str, str] = {'key': 'value'}
 
+data = Person('Ivan', 30, 'Moscow')
 
-class PersonTXTIterator:
-    def __init__(self, file_name, encoding='utf-8'):
-        self.file_name = file_name
-        self.file = open(file_name, 'r', encoding='utf-8')
+serialized_data: bytes = pickle.dumps(data)  # с s потому что смотрим на строку
+print(serialized_data)
 
-    def __iter__(self):
-        return self
+with open('../data/data.pickle', 'wb') as file:
+    pickle.dump(data, file)  # без s потому сбрасываем в файл
 
-    def __next__(self):
-        line = self.file.readline().strip()
-        if not line:
-            self.file.close()
-            raise StopIteration
-        # Используем eval для преобразования строки в Person
-        result = None
-        try:
-            result: Person = eval(line)
-        except Exception as e:
-            print(e)
-        return result
-
-
-"""
-Датасет для теста (содержимое файла)
-Person(name='Тимур', age=25)
-Person(name='Павел', age=30)
-Person(name='Оксана', age=22)
-Person(name='Алексей', age=35)
-Person(name='Виталий', age=27)
-"""
-
-FILE = r'../data/persons.txt'
-person_iterator = PersonTXTIterator(FILE)
-
-for person in person_iterator:
-    print(person)
+with open('../data/data.pickle', 'rb') as file:
+    data = pickle.load(file)
+    print(data)
+    print(type(data))
