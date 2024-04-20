@@ -9,63 +9,46 @@ Meta classes
 Библиотека pickle
 Практика pickle
 """
-from dataclasses import dataclass
-from typing import Any
-
-"""
-Вложенные классы, или внутренние классы, это классы, которые определены внутри другого класса. 
-Они используются по разным причинам:
-
-Инкапсуляция: Вложенный класс может быть скрыт от внешнего мира и использоваться 
-только внутри внешнего класса, что улучшает инкапсуляцию.
-
-Логическая структура: Если класс A является частью класса B и не имеет смысла 
-без класса B, его можно сделать вложенным классом.
-
-Улучшение читаемости и поддерживаемости кода: Если класс используется только 
-одним внешним классом, его удобно сделать вложенным, чтобы упростить код и улучшить его поддерживаемость.
-"""
 
 
-class Outer:
-    def __init__(self, outer_var, db_table, inner_dict: dict):
-        self.outer_var = outer_var
-        self.db_table = db_table
-        self.inner = self.Inner(**inner_dict)
+# Определим простой итератор для перебора чисел от 0 до заданного предела
+class SimpleIterator:
+    def __init__(self, limit):
+        self.limit = limit  # Максимальное значение для итерации
+        self.value = 0  # Начальное значение счетчика
 
-    @dataclass
-    class Inner:
-        inner_var: int
-        db_table: str
+    # Метод __iter__ возвращает сам объект итератора
+    def __iter__(self):
+        return self
 
-        def get_all_params_dict(self) -> dict[str, Any]:
-            return self.__dict__
-
-
-inner_dict_params = {'inner_var': 2, 'db_table': 'users'}
-outer = Outer(1, 'Личные данные', inner_dict_params)
-print(outer.inner.get_all_params_dict())
-
-inner = Outer.Inner(**inner_dict_params)
-print(inner.get_all_params_dict())
-
-
-@dataclass
-class City:
-    name: str
-    country: str
-    population: int
+    # Метод __next__ возвращает следующее число и увеличивает счетчик
+    # next()
+    def __next__(self):
+        if self.value < self.limit:
+            current = self.value  # current - временная переменная куда попадает текущее значение
+            self.value += 1
+            return current
+        else:
+            # Когда достигнут предел, генерируется исключение StopIteration
+            raise StopIteration
 
 
-list_dict_cities = [
-    {"name": "Moscow", "country": "Russia", "population": 12615882},
-    {"name": "Paris", "country": "France", "population": 2140526},
-    {"name": "Berlin", "country": "Germany", "population": 3769495},
-]
+# Создадим итератор для чисел от 0 до 5
+my_iterator = SimpleIterator(5)
 
-cities_2 = []
-for city in list_dict_cities:
-    cities_2.append(City(**city))
+# Используем итератор в цикле for для вывода чисел
+for number in my_iterator:
+    print(number)
 
+# Делаем это через функцию iter() и next()
 
-cities = [City(**city) for city in list_dict_cities]
+# Создадим итератор для чисел от 0 до 5
+my_iterator = SimpleIterator(5)
+
+# Получим объект итератора
+iterator = iter(my_iterator)
+
+# Получим следующее число
+print(next(iterator))  # 0
+print(next(iterator))  # 1
+print(next(iterator))  # 2
