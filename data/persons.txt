@@ -1,0 +1,5 @@
+Person(name='Тимур', age=25)
+Person(name='Павел', age=30)
+Person(name='Оксана', age=22)
+Person(name='Алексей', age=35)
+Person(name='Виталий', age=27)
