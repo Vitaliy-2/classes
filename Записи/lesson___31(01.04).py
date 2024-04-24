@@ -14,6 +14,8 @@ PostLoad - обработка данных после загрузки
 """
 
 from dataclasses import dataclass, field
+from typing import Union, Dict
+
 from data import cities
 
 # print(cities.cities_list)
@@ -59,39 +61,49 @@ class CityValidator:
             raise ValueError("Субъект должен быть строкой")
         if not isinstance(self.city["coords"], dict):
             raise ValueError("Координаты должны быть словарем")
-        if not isinstance(self.city["coords"]["lat"], (float, int)):
-            raise ValueError("Широта должна быть числом")
-        if not isinstance(self.city["coords"]["lon"], (float, int)):
-            raise ValueError("Долгота должна быть числом")
+        lat = self.city["coords"]["lat"]
+        try:
+            float(lat)
+        except ValueError:
+            raise ValueError(f"Широта должна быть числом {lat}")
+        lon = self.city["coords"]["lon"]
+        try:
+            float(lon)
+        except ValueError:
+            raise ValueError(f"Долгота должна быть числом {lon}")
         return self.city
 
 
 class CitySerializer:
     def __init__(self):
-        self.city: str = ''
+        self.__city: Union[None | Dict | City] = None
+        self.__city_validator = CityValidator()
+
+    def __city_validate(self, city: dict):
+        return self.__city_validator.validate(city)
 
     def serialize(self, city: City):
-        self.city = city
+        self.__city = city
         return {
-            "name": self.city.name,
-            "population": self.city.population,
-            "district": self.city.district,
-            "subject": self.city.subject,
+            "name": self.__city.name,
+            "population": self.__city.population,
+            "district": self.__city.district,
+            "subject": self.__city.subject,
             "coords": {
-                "lat": self.city.lat,
-                "lon": self.city.lon
+                "lat": self.__city.lat,
+                "lon": self.__city.lon
             }
         }
 
-    @staticmethod
-    def deserialize(data):
+    def deserialize(self, data):
+        self.__city = self.__city_validate(data)
         return City(
-            name=data["name"],
-            population=data["population"],
-            district=data["district"],
-            subject=data["subject"],
-            lat=data["coords"]["lat"],
-            lon=data["coords"]["lon"]
+            name=self.__city["name"],
+            population=self.__city["population"],
+            district=self.__city["district"],
+            subject=self.__city["subject"],
+            lat=float(self.__city["coords"]["lat"]),
+            lon=float(self.__city["coords"]["lon"])
         )
 
 
