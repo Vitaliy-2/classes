@@ -7,7 +7,7 @@ Lesson 32
 """
 
 from dataclasses import dataclass
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, pre_load, post_load
 
 
 @dataclass
@@ -49,23 +49,37 @@ class CitySchema(Schema):
     subject = fields.Str()
     lat = fields.Float()
     lon = fields.Float()
-    email = fields.Email(missing="info@default.com")  # Устанавливаем значение по умолчанию для email
+    email = fields.Str(load_default='info@default.com')  # Устанавливаем значение по умолчанию для email
+
+    # Метод сработает перед тем как начнется валидация данных
+    @pre_load()
+    def unwrap_coords(self, data, **kwargs):
+        # Этот метод будет вызван до десериализации каждого элемента списка.
+        # Он изменяет структуру данных, извлекая координаты из вложенного словаря.
+        # Делаем копию словаря, чтобы не изменять оригинальные данные
+        data = data.copy()
+        data.update({
+            'lat': data['coords']['lat'],
+            'lon': data['coords']['lon']
+        })
+        del data['coords']  # Удаляем исходный вложенный словарь координат
+        return data
+
+    @post_load
+    def make_city(self, data, **kwargs):
+        # Этот метод создает экземпляр City из десериализованных данных.
+        return City(**data)
 
 
-# Создаём экземпляр схемы
+schema_many = CitySchema(many=True)
 schema = CitySchema()
 
-# Пример десериализации для первого города в списке
-example_city_dict = cities_list[0]
-example_city_dict["lat"] = example_city_dict["coords"]["lat"]
-example_city_dict["lon"] = example_city_dict["coords"]["lon"]
-# Удаляем вложенный словарь 'coords', так как он больше не нужен
-del example_city_dict["coords"]
+# Поштучно и множественно
+cities = schema_many.load(cities_list)
+print(cities)
+city = schema.load(cities_list[0])
+print(city)
 
-# Десериализация словаря в объект City
-city_object = schema.load(example_city_dict)
-print(city_object)
-
-# Сериализация объекта City в словарь
-city_dict = schema.dump(city_object)
-print(city_dict)
+# Сериализация - пробуем сделать dump
+city2 = schema.dump(city)
+print(city2)
