@@ -16,7 +16,7 @@ PostLoad - если все пройдет проверки, то данные п
 
 from dataclasses import dataclass, field
 from typing import Union, Dict
-from marshmallow import Schema, fields, post_load, ValidationError
+from marshmallow import Schema, fields, post_load, ValidationError, validate
 
 from data import cities
 # from data.cities import cities_list
@@ -67,10 +67,8 @@ class CitySchema(Schema):
 
 
 city_schema = CitySchema()
-# load - автоматом вызывает метод make_city
-city = city_schema.load(cities_list[0])
+city = city_schema.load(many=True, data=cities_list)
 print(city)
-
 # Преобразование данных в словарь
-city_dict = city_schema.dump(city)
+city_dict = city_schema.dump(many=True, obj=city)
 print(city_dict)
