@@ -21,7 +21,6 @@ class City:
     population: int
     district: str
     subject: str
-    email: str
     coords: dict = field(default_factory=dict)
 
 
@@ -46,34 +45,12 @@ cities_list = [
     }]
 
 
-class CoordsSchema(Schema):
-    lat = fields.Float()
-    lon = fields.Float()
+# Создание схемы на основе датакласса
+CitySchema = marshmallow_dataclass.class_schema(City)
 
+# Создание экземпляра схемы
+city_schema = CitySchema(many=True)
 
-class CitySchema(Schema):
-    name = fields.Str()
-    population = fields.Int()
-    district = fields.Str()
-    subject = fields.Str()
-    coords = fields.Nested(CoordsSchema)  # Одна схема встроена в другую
-    email = fields.Str(load_default='info@default.com')  # Устанавливаем значение по умолчанию для email
-
-    @post_load
-    def make_city(self, data, **kwargs):
-        # Этот метод создает экземпляр City из десериализованных данных.
-        return City(**data)
-
-
-schema_many = CitySchema(many=True)
-schema = CitySchema()
-
-# Поштучно и множественно
-cities = schema_many.load(cities_list)
+# Десериализация данных
+cities = city_schema.load(cities_list)
 print(cities)
-city = schema.load(cities_list[0])
-print(city)
-
-# Сериализация - пробуем сделать dump
-city2 = schema.dump(city)
-print(city2)
