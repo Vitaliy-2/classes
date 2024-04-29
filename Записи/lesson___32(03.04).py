@@ -12,13 +12,16 @@ Lesson 32
 from dataclasses import dataclass, field
 from marshmallow import Schema, fields, pre_load, post_load
 import marshmallow_dataclass
+from marshmallow.validate import Range
+
+
 # оно позволит сократить код, без схемы указать лишь типы данных в датаклассе
 
 
 @dataclass
 class City:
     name: str
-    population: int
+    population: int = field(metadata={'validate': Range(min=1, max=50000000)})
     district: str
     subject: str
     email: str = field(default="", metadata={"load_default": "",
@@ -53,13 +56,25 @@ cities_list = [
 # Создание схемы на основе датакласса
 CitySchema = marshmallow_dataclass.class_schema(City)
 
-# Создание экземпляра схемы
-city_schema = CitySchema(many=True)
+# Расширяем своей схемой, схему созданную на основе датакласса
 
-# Десериализация данных
+
+class CoordsSchema(Schema):
+    lat = fields.Float()
+    lon = fields.Float()
+
+
+# Наследуемся от автоматической схемы
+class CitySchemaExtended(CitySchema):
+    coords = fields.Nested(CoordsSchema, required=True)
+# Nested - проверяет корд вложенной схемой
+
+
+# Десериализация
+city_schema = CitySchemaExtended(many=True)
 cities = city_schema.load(cities_list)
 print(cities)
 
-# Сериализация данных
-data = city_schema.dump(cities)
-print(data)
+# Сериализация
+result = city_schema.dump(cities)
+print(result)
