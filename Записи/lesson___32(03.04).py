@@ -21,6 +21,11 @@ class City:
     population: int
     district: str
     subject: str
+    email: str = field(default="", metadata={"load_default": "",
+                                             "load_only": True})
+    # Только в load будет email, то есть мы его не отдаем на выгрузку
+    # load_only - параметр схемы, который мы передаем через словарь metadata
+    # Потому что саму схему не создаем (она автоматически)
     coords: dict = field(default_factory=dict)
 
 
@@ -54,3 +59,7 @@ city_schema = CitySchema(many=True)
 # Десериализация данных
 cities = city_schema.load(cities_list)
 print(cities)
+
+# Сериализация данных
+data = city_schema.dump(cities)
+print(data)
