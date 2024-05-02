@@ -6,85 +6,64 @@ Lesson 34: Порождающие паттерны
 - Builder - строитель
 - Abstract Factory - абстрактная фабрика
 """
+# Prototype - прототип
+# Паттерн Прототип (Prototype) - это порождающий паттерн проектирования,
+# который позволяет копировать объекты, не вдаваясь в подробности их реализации.
 
 
-# Abstract Factory - абстрактная фабрика
-# Паттерн Abstract Factory предоставляет интерфейс для создания семейств взаимосвязанных или взаимозависимых объектов,
-# не специфицируя их конкретных классов.
-
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-# from selenium.webdriver.firefox.options import Options
+# Абстрактный пример
+import copy
+import random
 
 
-# Singleton - одиночка
-# Гарантирует, что у класса есть только один экземпляр
-# и предоставляет к нему глобальную точку доступа.
+class Prototype:
+    def __init__(self, name):
+        self.name = name
 
-# Абстрактный простой пример
-
-class Singleton:
-    _instance = None  # Статическая переменная для хранения единственного экземпляра
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(Singleton, cls).__new__(cls)
-        return cls._instance
+    def clone(self):
+        return copy.deepcopy(self)
 
 
-# Использование Singleton
-instance1 = Singleton()
-instance2 = Singleton()
+p1 = Prototype("Original")
+p2 = p1.clone()
+p3 = p2.clone()
 
-# Проверяем, являются ли эти экземпляры одним и тем же объектом
-print(instance1 is instance2)  # True, это один и тот же экземпляр
-print(id(instance1))
-print(id(instance2))
+print(p1.name)
+print(p2.name)
+print(p3.name)
 
-
-# Пример Browser с webdriver (selenium)
-
-class Browser:
-    """
-    Представляет веб-браузер с использованием паттерна Singleton.
-
-    Аргументы:
-        options_list (list): Список опций для настройки браузера.
-    Атрибуты:
-        options (webdriver.ChromeOptions): Настройки браузера.
-        driver (webdriver.Chrome): Экземпляр драйвера браузера.
-    """
-    _instance = None  # Приватный атрибут для хранения единственного экземпляра
-
-    # instance.options и instance.driver - добавляются в new,
-    # потому что это классовые атрибуты, а не отдельных экземпляров
-    def __new__(cls, options_list=[]):
-        if cls._instance is None:
-            cls._instance = super(Browser, cls).__new__(cls)
-            # После создания экземпляра можно инициализировать атрибуты
-            cls._instance.options = options_list
-            cls._instance.driver = cls._instance.get_driver()
-        return cls._instance
-
-    def get_options_object(self):
-        return Options()
-
-    def set_options(self):
-        options = self.get_options_object()
-        for option in self.options:
-            options.add_argument(option)
-        return options
-
-    def get_driver(self):
-        options = self.set_options()
-        # Имплицитное ожидание
-        driver = webdriver.Chrome(options=options)
-        driver.implicitly_wait(10)
-        return driver
+print(p1 is p2)
+print(p2 is p3)
 
 
-# Использование Browser
-browser1 = Browser(options_list=['--incognito'])
-browser2 = Browser()
-print(id(browser1))
-print(id(browser2))
+class Tree:
+    def __init__(self, species, age, height):
+        self.species = species  # Вид
+        self.age = age  # Возраст
+        self.height = height  # Высота
+
+    def clone(self):
+        """Клонирует текущий экземпляр дерева с рандомным возрастом от оригинала/2 до оригинала."""
+        # Создаём глубокую копию объекта
+        clone_tree = copy.deepcopy(self)
+        # Устанавливаем рандомный возраст в диапазоне от оригинал/2 до оригинала
+        clone_tree.age = random.randint(self.age // 2, self.age)
+        clone_tree.height = random.randint(self.height // 2, self.height)
+        return clone_tree
+
+    def __str__(self):
+        return f"{self.species} дерево возрастом {self.age} лет, высотой {self.height} метров."
+
+
+# Создаём экземпляр дерева
+original_tree = Tree("Дуб", 100, 30)
+
+# Клонируем дерево
+cloned_tree = original_tree.clone()
+
+print(original_tree)  # Выведет информацию об оригинальном дереве
+print(cloned_tree)  # Выведет информацию о клонированном дереве с изменённым возрастом
+
+forest = [original_tree.clone() for _ in range(5)]
+for tree in forest:
+    print(tree)
