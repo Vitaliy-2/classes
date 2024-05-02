@@ -6,64 +6,74 @@ Lesson 34: Порождающие паттерны
 - Builder - строитель
 - Abstract Factory - абстрактная фабрика
 """
-# Prototype - прототип
-# Паттерн Прототип (Prototype) - это порождающий паттерн проектирования,
-# который позволяет копировать объекты, не вдаваясь в подробности их реализации.
+# Builder - строитель
+# Позволяет создавать сложные объекты пошагово
+
+# Пример 1 BurgerBuilder
+from abc import ABC, abstractmethod
+from typing import List
 
 
-# Абстрактный пример
-import copy
-import random
+class Burger:
+    def __init__(self):
+        self.ingredients: List[str] = []
+
+    def add_ingredient(self, ingredient: str) -> None:
+        self.ingredients.append(ingredient)
 
 
-class Prototype:
-    def __init__(self, name):
-        self.name = name
+class AbstractBurgerBuilder(ABC):
+    @abstractmethod
+    def prepare_bun(self) -> None:
+        pass
 
-    def clone(self):
-        return copy.deepcopy(self)
+    @abstractmethod
+    def insert_patty(self) -> None:
+        pass
 
+    @abstractmethod
+    def add_condiments(self) -> None:
+        pass
 
-p1 = Prototype("Original")
-p2 = p1.clone()
-p3 = p2.clone()
+    def create_burger(self) -> None:
+        self.burger = Burger()
+        self.prepare_bun()
+        self.insert_patty()
+        self.add_condiments()
 
-print(p1.name)
-print(p2.name)
-print(p3.name)
-
-print(p1 is p2)
-print(p2 is p3)
-
-
-class Tree:
-    def __init__(self, species, age, height):
-        self.species = species  # Вид
-        self.age = age  # Возраст
-        self.height = height  # Высота
-
-    def clone(self):
-        """Клонирует текущий экземпляр дерева с рандомным возрастом от оригинала/2 до оригинала."""
-        # Создаём глубокую копию объекта
-        clone_tree = copy.deepcopy(self)
-        # Устанавливаем рандомный возраст в диапазоне от оригинал/2 до оригинала
-        clone_tree.age = random.randint(self.age // 2, self.age)
-        clone_tree.height = random.randint(self.height // 2, self.height)
-        return clone_tree
-
-    def __str__(self):
-        return f"{self.species} дерево возрастом {self.age} лет, высотой {self.height} метров."
+    def get_burger(self) -> Burger:
+        return self.burger
 
 
-# Создаём экземпляр дерева
-original_tree = Tree("Дуб", 100, 30)
+class FishBurgerBuilder(AbstractBurgerBuilder):
+    def prepare_bun(self) -> None:
+        self.burger.add_ingredient('Булочка для рыбургера')
 
-# Клонируем дерево
-cloned_tree = original_tree.clone()
+    def insert_patty(self) -> None:
+        self.burger.add_ingredient('Рыбный котлет')
 
-print(original_tree)  # Выведет информацию об оригинальном дереве
-print(cloned_tree)  # Выведет информацию о клонированном дереве с изменённым возрастом
+    def add_condiments(self) -> None:
+        self.burger.add_ingredient('Соус тар-тар')
 
-forest = [original_tree.clone() for _ in range(5)]
-for tree in forest:
-    print(tree)
+
+class BurgerBuilder(AbstractBurgerBuilder):
+    def prepare_bun(self) -> None:
+        self.burger.add_ingredient('Булочка для бургера')
+
+    def insert_patty(self) -> None:
+        self.burger.add_ingredient('Говяжий котлет')
+
+    def add_condiments(self) -> None:
+        self.burger.add_ingredient('Кетчуп')
+
+
+b_builder = BurgerBuilder()
+f_builder = FishBurgerBuilder()
+b_builder.create_burger()
+f_builder.create_burger()
+
+b_burger = b_builder.get_burger()
+f_burger = f_builder.get_burger()
+
+print(b_burger.ingredients)
+print(f_burger.ingredients)
