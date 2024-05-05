@@ -21,6 +21,10 @@ class Burger:
     def add_ingredient(self, ingredient: str) -> None:
         self.ingredients.append(ingredient)
 
+    def get_margeting_str(self) -> str:
+        """Метод определяется в конкретных строителях"""
+        pass
+
 
 class AbstractBurgerBuilder(ABC):
     @abstractmethod
@@ -37,9 +41,6 @@ class AbstractBurgerBuilder(ABC):
 
     def create_burger(self) -> None:
         self.burger = Burger()
-        self.prepare_bun()
-        self.insert_patty()
-        self.add_condiments()
 
     def get_burger(self) -> Burger:
         return self.burger
@@ -55,6 +56,16 @@ class FishBurgerBuilder(AbstractBurgerBuilder):
     def add_condiments(self) -> None:
         self.burger.add_ingredient('Соус тар-тар')
 
+    def get_margeting_str(self) -> str:
+        return f'Самый вкусный рыбургер в мире! Содержит {", ".join(self.burger.ingredients)}'
+
+    def create_burger(self) -> None:
+        super().create_burger()
+        self.prepare_bun()
+        self.insert_patty()
+        self.add_condiments()
+        self.burger.get_margeting_str = self.get_margeting_str
+
 
 class BurgerBuilder(AbstractBurgerBuilder):
     def prepare_bun(self) -> None:
@@ -65,6 +76,20 @@ class BurgerBuilder(AbstractBurgerBuilder):
 
     def add_condiments(self) -> None:
         self.burger.add_ingredient('Кетчуп')
+    
+    def add_cheese(self):
+        self.burger.add_ingredient('Сыр')
+
+    def get_margeting_str(self) -> str:
+        return f'Самый фукусный бургер в мире! Содержит: {", ".join(self.burger.ingredients)}'
+    
+    def create_burger(self) -> None:
+        super().create_burger()
+        self.prepare_bun()
+        self.insert_patty()
+        self.add_condiments()
+        self.add_cheese()
+        self.burger.get_margeting_str = self.get_margeting_str
 
 
 b_builder = BurgerBuilder()
@@ -77,3 +102,6 @@ f_burger = f_builder.get_burger()
 
 print(b_burger.ingredients)
 print(f_burger.ingredients)
+
+print(b_burger.get_margeting_str())
+print(f_burger.get_margeting_str())
