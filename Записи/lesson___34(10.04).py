@@ -14,83 +14,91 @@ Lesson 34: Порождающие паттерны
 from abc import ABC, abstractmethod
 
 
-class AbstractProductA(ABC):
-    """
-    Абстрактный продукт A. Определяет интерфейс для продуктов семейства A.
-    """
-
+# Абстрактные продукты
+class AbstractKhinkali(ABC):
     @abstractmethod
-    def operation(self) -> str:
+    def eat(self) -> str:
         pass
 
 
-class ConcreteProductA1(AbstractProductA):
-    """
-    Конкретный продукт A1. Реализует интерфейс продукта A.
-    Создается фабрикой 1.
-    """
-
-    def operation(self) -> str:
-        return "Результат работы ConcreteProductA1"
-
-
-class ConcreteProductA2(AbstractProductA):
-    """
-    Конкретный продукт A2. Реализует интерфейс продукта A.
-    Создается фабрикой 2.
-    """
-
-    def operation(self) -> str:
-        return "Результат работы ConcreteProductA2"
-
-
-class AbstractFactory(ABC):
-    """Абстрактная фабрика"""
-
+class AbstractPelmeni(ABC):
     @abstractmethod
-    def create_product_a(self) -> AbstractProductA:
+    def eat(self) -> str:
         pass
 
 
-class ConcreteFactory1(AbstractFactory):
-    """
-    Конкретная фабрика 1. Делает продукты сеймейства 1.
-    """
-
-    def create_product_a(self) -> AbstractProductA:
-        return ConcreteProductA1()
+# Конкретные продукты
+class KhinkaliWithLamb(AbstractKhinkali):
+    def eat(self) -> str:
+        return "Хинкали с бараниной"
 
 
-class ConcreteFactory2(AbstractFactory):
-    """
-    Конкретная фабрика 2. Делает продукты сеймейства 2.
-    """
-
-    def create_product_a(self) -> AbstractProductA:
-        return ConcreteProductA2()
+class KhinkaliWithBeef(AbstractKhinkali):
+    def eat(self) -> str:
+        return "Хинкали с говядиной"
 
 
-# Facade
-# Паттерн Facade предоставляет простой интерфейс к сложной системе классов, библиотеке или фреймворку.
+class PelmeniWithShrimp(AbstractPelmeni):
+    def eat(self) -> str:
+        return "Пельмени с креветками"
 
-class Facade:
+
+class PelmeniWithBeef(AbstractPelmeni):
+    def eat(self) -> str:
+        return "Пельмени с говядиной"
+
+
+# Абстрактная фабрика
+class AbstractDumplingFactory(ABC):
+    @abstractmethod
+    def create_khinkali(self) -> AbstractKhinkali:
+        pass
+
+    @abstractmethod
+    def create_pelmeni(self) -> AbstractPelmeni:
+        pass
+
+
+# Конкретные фабрики
+class KhinkaliFactory(AbstractDumplingFactory):
+    def create_khinkali(self) -> AbstractKhinkali:
+        return KhinkaliWithBeef()  # или KhinkaliWithLamb, в зависимости от предпочтений
+
+    def create_pelmeni(self) -> AbstractPelmeni:
+        # Эта фабрика не производит пельмени, но для соответствия интерфейсу возвращаем пельмени с говядиной
+        return PelmeniWithBeef()
+
+
+class PelmeniFactory(AbstractDumplingFactory):
+    def create_khinkali(self) -> AbstractKhinkali:
+        # Эта фабрика не производит хинкали, но для соответствия интерфейсу возвращаем хинкали с говядиной
+        return KhinkaliWithBeef()
+
+    def create_pelmeni(self) -> AbstractPelmeni:
+        return PelmeniWithShrimp()  # или PelmeniWithBeef, в зависимости от предпочтений
+
+
+# Фасад
+class DumplingMealFacade:
     def __init__(self):
-        self.factory: AbstractFactory | None = None
+        self.factory: AbstractDumplingFactory | None = None
 
-    def __call__(self):
-        user_input = input("Введите 1 или 2: ")
-        if user_input == "1":
-            self.factory = ConcreteFactory1()
-        elif user_input == "2":
-            self.factory = ConcreteFactory2()
+    def prepare_meal(self, meal_type: str):
+        if meal_type == "khinkali":
+            self.factory = KhinkaliFactory()
+        elif meal_type == "pelmeni":
+            self.factory = PelmeniFactory()
         else:
-            raise ValueError("Неверный ввод")
+            raise ValueError("Неверный тип еды")
 
-        if self.factory:
-            product = self.factory.create_product_a()
-            print(product.operation())
+        khinkali = self.factory.create_khinkali()
+        pelmeni = self.factory.create_pelmeni()
+        print(khinkali.eat())
+        print(pelmeni.eat())
 
 
+# Использование
 if __name__ == "__main__":
-    facade = Facade()
-    facade()
+    meal_facade = DumplingMealFacade()
+    meal_type = input("Выберите блюдо (khinkali/pelmeni): ")
+    meal_facade.prepare_meal(meal_type)
