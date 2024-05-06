@@ -70,7 +70,9 @@ def create_pizza():
     pizza_builder = PizzaBuilder(ingredient_factory, size_factory)
     user_input = input('Выберите размер пиццы, который Вы хотите заказать ( Маленькая / Средняя / Большая ): ').lower()
     pizza_builder.set_size(user_input)
-    pizza_builder.set_type("мясная")
+    user_input_type = input('Укажите желаемый тип пиццы (Помидоро, Пепперони, Четыре сыра, '
+                            'Гавайская, Мясная, Дон бекон: ').lower()
+    pizza_builder.set_type(user_input_type)
     pizza = pizza_builder.build()
     return pizza
 
