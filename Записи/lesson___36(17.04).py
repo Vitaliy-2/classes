@@ -6,124 +6,101 @@ Lesson 36: Поведенческие паттерны
 - State - состояние
 """
 
-# Стратегия - это поведенческий паттерн проектирования, который определяет семейство алгоритмов, инкапсулирует каждый
-# из них и делает их взаимозаменяемыми. Он позволяет изменять алгоритмы независимо от клиентов, которые ими пользуются.
+# Observer - наблюдатель - это поведенческий паттерн проектирования, который создает механизм подписки, позволяющий одним объектам следить и реагировать на события, происходящие в других объектах.
 
-# Пример 1 - Стратегия приветствия
-
+# Напишем пример с датчиками умного дома и их наблюдателями.
 
 from abc import ABC, abstractmethod
-import time
-from dataclasses import dataclass
-from abc import ABC, abstractmethod
-from pprint import pprint
-from typing import List
-
-from selenium import webdriver
-from selenium.common import NoSuchElementException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webelement import WebElement
 
 
-class AbstractBrowserStrategy(ABC):
+class Sensor(ABC):
     """
-    Абстрактный класс стратегии браузера
+    Абстрактный класс датчика
     """
 
-    def __init__(self, settings: List[str]):
-        self.settings = settings
-        self.implicity_wait = 10
+    def __init__(self, name: str):
+        self.name = name
+        self.observers = []
+
+    def add_observer(self, observer):
+        self.observers.append(observer)
+
+    def remove_observer(self, observer):
+        self.observers.remove(observer)
+
+    def notify_observers(self, value):
+        for observer in self.observers:
+            observer.update(self.name, value)
 
     @abstractmethod
-    def get_options_object(self):
-        pass
-
-    @abstractmethod
-    def get_driver(self):
+    def get_value(self):
         pass
 
 
-class ChromeBrowserStrategy(AbstractBrowserStrategy):
+class TemperatureSensor(Sensor):
     """
-    Конкретная стратегия для браузера Chrome
-    """
-
-    def get_options_object(self):
-        """
-        Получение объекта настроек для Chrome
-        """
-        options = webdriver.ChromeOptions()
-        if self.settings:
-            for option in self.settings:
-                options.add_argument(option)
-        return options
-
-    def get_driver(self):
-        """
-        Получение драйвера для Chrome
-        """
-        options = self.get_options_object()
-        driver = webdriver.Chrome(options)
-        driver.implicitly_wait(self.implicity_wait)
-        return driver
-
-
-class FirefoxBrowserStrategy(AbstractBrowserStrategy):
-    """
-    Конкретная стратегия для браузера Firefox
+    Класс датчика температуры
     """
 
-    def get_options_object(self):
-        """
-        Получение объекта настроек для Firefox
-        """
-        options = webdriver.FirefoxOptions()
-        if self.settings:
-            for option in self.settings:
-                options.add_argument(option)
-        return options
-
-    def get_driver(self):
-        """
-        Получение драйвера для Firefox
-        """
-        options = self.get_options_object()
-        driver = webdriver.Firefox(options)
-        driver.implicitly_wait(self.implicity_wait)
-        return driver
+    def get_value(self):
+        return 25
 
 
-class Browser:
+class HumiditySensor(Sensor):
     """
-    Класс - контекст для работы с одним из стратегий-браузеров
+    Класс датчика влажности
     """
 
-    def __init__(self):
-        self.strategy = FirefoxBrowserStrategy([])
-
-    def set_strategy(self, strategy: AbstractBrowserStrategy):
-        """
-        Установка стратегии
-        """
-        self.strategy = strategy
-
-    def get_driver(self):
-        """
-        Получение драйвера
-        """
-        return self.strategy.get_driver()
+    def get_value(self):
+        return 50
 
 
-def main():
-    browser = Browser()  # Экземпляр контекста
-    browser.set_strategy(FirefoxBrowserStrategy(["--incognito"]))  # Установка стратегии
-    driver = browser.get_driver()  # Заставил контекст выполнить действие
+class AbstractObserver(ABC):
+    """
+    Абстрактный класс наблюдателя
+    """
 
-    # Использую результат действия
-    driver.get("https://google.com")
-    time.sleep(5)
-    driver.quit()
+    @abstractmethod
+    def update(self, sensor_name, value):
+        pass
 
 
-if __name__ == "__main__":
-    main()
+class ConsoleObserver(AbstractObserver):
+    """
+    Консольный наблюдатель
+    """
+
+    def update(self, sensor_name, value):
+        print(f"Датчик {sensor_name} сообщает значение: {value} в {self.__class__.__name__}")
+
+
+class FileObserver(AbstractObserver):
+    """
+    Файловый наблюдатель
+    """
+
+    def update(self, sensor_name, value):
+        with open("log.txt", "a") as file:
+            file.write(f"Датчик {sensor_name} сообщает значение: {value} в {self.__class__.__name__}\n")
+
+
+# Тесты
+t1 = TemperatureSensor("Температурный датчик №1")
+t2 = TemperatureSensor("Температурный датчик №2")
+h1 = HumiditySensor("Датчик влажности №1")
+h2 = HumiditySensor("Датчик влажности №2")
+
+c1 = ConsoleObserver()
+f1 = FileObserver()
+
+devises = [t1, t2, h1, h2]
+observers = [c1, f1]
+
+# Подписываем наблюдателей на датчики
+for device in devises:
+    for observer in observers:
+        device.add_observer(observer)
+
+# Получаем значения датчиков
+for device in devises:
+    device.notify_observers(device.get_value())
