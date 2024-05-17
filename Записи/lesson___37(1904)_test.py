@@ -23,12 +23,14 @@ import pytest
 
 
 def is_palindrome(word):
-    return word == word[::-1]
+    return word.lower().replace(' ', '') == word[::-1].lower().replace(' ', '')
 
 
 def test_is_palindrome_registr():
     assert is_palindrome('Дед') == True, 'Ваша функция не обрабатывает регистр'
     # ТАК НЕ НАДО. Потому что, если тест упадет, то дальше не пойдет
+
+
 #     assert is_palindrome('а роза упала на лапу азора') == True, 'Ваша функция не обрабатывает многословные палиндромы'
 
 
@@ -45,9 +47,28 @@ test_set = [
     ('bob', True),
     ('bobik', False),
     ('бобер', False),
+    pytest.param('бобер', True, marks=pytest.mark.xfail),
 ]
 
 
-@pytest.mark.parametrize('word, result', test_set)
+@pytest.mark.param  # Дали придуманный маркер
+@pytest.mark.parametrize('word, result', test_set)  # параметризация тестов
 def test_is_palindrome_param(word, result):
     assert is_palindrome(word) == result, f'Слово {word} не является палиндромом'
+
+
+# Тесты, которые ожидают провала
+@pytest.mark.xfail
+def test_is_palindrome_fail():
+    assert is_palindrome('дудка') == True, 'Ваша функция посчитала слово дудка палиндромом'
+
+
+# Xfail - при тестах - хорошо, а Xpassed - плохо
+# xfail - ожидаемое падение теста
+
+
+# Тест который, ожидает что внутри функции произойдет исключение
+@pytest.mark.xfail
+def test_is_palindrome_int_slice_type_error():
+    with pytest.raises(Exception):
+        is_palindrome(123), "Ваша функция не обрабатывает исключения"
