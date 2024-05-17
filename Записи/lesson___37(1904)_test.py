@@ -20,6 +20,8 @@ scope - как часто будет пересоздаваться фиксту
 test_class - тестовый класс для группировки тестов
 """
 import pytest
+import os
+import time
 
 
 def is_palindrome(word):
@@ -29,6 +31,8 @@ def is_palindrome(word):
 def test_is_palindrome_registr():
     assert is_palindrome('Дед') == True, 'Ваша функция не обрабатывает регистр'
     # ТАК НЕ НАДО. Потому что, если тест упадет, то дальше не пойдет
+
+
 #     assert is_palindrome('а роза упала на лапу азора') == True, 'Ваша функция не обрабатывает многословные палиндромы'
 
 
@@ -108,3 +112,24 @@ class TestClass:
     def test_not_dependency(self, level_one):
         assert level_one != "I'm level two"
 
+
+# Пишем фикстуру которая создает файл перед тестами, и удаляет после
+
+
+@pytest.fixture(scope='function')
+def file():
+    with open('test.txt', 'w') as f:
+        f.write('Hello, world')
+    yield
+    time.sleep(10)
+    os.remove('test.txt')
+
+
+def test_file(file):
+    with open('test.txt', 'r') as f:
+        assert f.read() == 'Hello, world'
+
+
+def test_file2(file):
+    with open('test.txt', 'r') as f:
+        assert f.read() == 'Hello, world'
