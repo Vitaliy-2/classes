@@ -4,43 +4,57 @@ Pytest
 - Фикстуры
 - Параметризация фикстур
 """
+import json
+
 import pytest
 import time
 
-# Кейсы использования фикстур:
-# 1. Подготовка данных для теста
-# - Возвращение данных для одного текста
-# - Возвращение данных для параметризатора
-# 2. Очистка данных после теста
-# 3. Подготовка сложных объектов для теста
+
+def is_palindrome(word) -> bool:
+    return word.lower().replace(' ', '') == word[::-1].lower().replace(' ', '')
 
 
-class WeatherRequest:
-    def __init__(self, city: str, api_key: str):
-        self.city = city
-        self.api_key = api_key
-        self.response = None
-        self.route = f'http://api.openweathermap.org/data/2.5/weather?q={self.city}&appid={self.api_key}'
-
-    def get_weather(self):
-        time.sleep(5)
-        self.response = 'Sunny'
-
-
-@pytest.fixture(scope='session')
-def weather_data() -> WeatherRequest:
-    weather_request = WeatherRequest('Moscow', '1234567890')
-    weather_request.get_weather()
-    return weather_request
+@pytest.fixture
+def json_data(request):
+    json_str = """[
+    ["дуд", true],
+    ["дудка", false],
+    ["банан", false],
+    ["bob", true],
+    ["bobik", false],
+    ["бобер", false]
+    ]"""
+    data = json.loads(json_str)
+    word, result = data[request.param]
+    return word, result
 
 
-def test_is_request_string(weather_data):
-    assert isinstance(weather_data.response, str), 'Ответ не является строкой'
+@pytest.mark.parametrize('json_data', range(6), indirect=True)
+def test_is_palindrome_param(json_data):
+    word, result = json_data
+    assert is_palindrome(word) == result, f'Слово "{word}" не является палиндромом'
 
 
-def test_is_request_sunny(weather_data):
-    assert weather_data.response == 'Sunny', 'Погода не ясная'
+"""
+Подробное объяснение:
 
+@pytest.fixture: Эта декорация определяет фикстуру. Фикстура — это функция, которая запускается перед каждым тестом, 
+в котором она используется. 
 
-def test_len_request(weather_data):
-    assert len(weather_data.response) > 0, 'Данные не получены'
+Фикстура json_data загружает данные из строки JSON и возвращает пару значений (слово и ожидаемый результат) 
+на основе request.param.
+
+request.param: Это специальный параметр, который предоставляется pytest для доступа к параметрам теста в фикстуре. 
+Он используется для того, чтобы выбрать нужный элемент из списка данных. Каждый раз при выполнении теста, pytest 
+изменяет значение request.param в соответствии с заданным в parametrize.
+
+@pytest.mark.parametrize: 'json_data': имя параметра теста.
+
+range(6): создает последовательность индексов от 0 до 5, что соответствует числу элементов в данных JSON.
+
+indirect=True: указывает pytest, что значения в range(6) должны быть переданы не напрямую в тест, а через фикстуру 
+json_data, которая использует эти значения для выбора нужных данных.
+
+Тестовая функция test_is_palindrome_param: принимает результаты из фикстуры json_data (слово и результат) и проверяет, 
+является ли слово палиндромом. Сообщение об ошибке указывает, что слово должно быть палиндромом, если тест не проходит.
+"""
