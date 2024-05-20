@@ -58,3 +58,48 @@ json_data, которая использует эти значения для в
 Тестовая функция test_is_palindrome_param: принимает результаты из фикстуры json_data (слово и результат) и проверяет, 
 является ли слово палиндромом. Сообщение об ошибке указывает, что слово должно быть палиндромом, если тест не проходит.
 """
+
+
+"""
+Практика!
+Создайте функцию сложения двух чисел
+Создайте тест для этой функции с параметризацией
+"""
+
+sum_data_set = [
+    (2, 2, 4),
+    (3, 3, 6),
+    (4, 4, 8),
+    (5, 5, 10),
+    (6, 6, 12),
+    (100, 100, 200),
+    (0, 0, 0),
+    (-1, 1, 0),
+    (-1, -1, -2),
+    (1, -1, 0),
+    (4, -3, 1),
+    (-20, 20, 0)
+]
+
+
+def get_sum(a, b):
+    return a + b
+
+
+@pytest.mark.sumt  # Дали придуманный маркер
+@pytest.mark.parametrize('one, two, free', sum_data_set)
+def test_sum(one, two, free):
+    assert get_sum(one, two) == free, f'Сумма чисел {one} и {two} не равняется {free}'
+
+
+# Фикстура которая вернет функцию сложения
+@pytest.fixture(scope='module')
+def sum_fixture():
+    return get_sum
+
+
+# Параметризация и фикстура
+@pytest.mark.sumty
+@pytest.mark.parametrize('one, two, free', sum_data_set)
+def test_sum_fixture(sum_fixture, one, two, free):
+    assert sum_fixture(one, two) == free, f'Сумма чисел {one} и {two} не равна {free}'
