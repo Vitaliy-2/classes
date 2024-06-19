@@ -1,0 +1,35 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "marvel",
+            "database": "${workspaceFolder:LessonPy}/marvel_not_normal.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "test_1",
+            "database": "${workspaceFolder:LessonPy}/test_1.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "marvel_hw",
+            "database": "${workspaceFolder:LessonPy}/marvel.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "${workspaceFolder:LessonPy}/sql_lite/lesson47/lesson_47.db",
+            "name": "lesson_47"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "sqlite3",
+            "database": "${workspaceFolder:LessonPy}/sql_lite/sqlite3.db"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}
