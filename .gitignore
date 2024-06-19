@@ -41,3 +41,4 @@ venv
 marvel_hw.session.sql
 test_1.session.sql
 sql_lite/sql_lite.zip
+sqlite3.session.sql
